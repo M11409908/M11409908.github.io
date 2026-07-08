@@ -1,2 +1,2 @@
-額外執行-由openAI產生圖
+這是由Office的檔案csv也可讀取分析，並產出一頁圖檔
 https://m11409908.github.io/
