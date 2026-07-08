@@ -1,2 +1,0 @@
-這是作業1_6，Hermes Agent完整管理介面，並Telegram連線成功。
-https://m11409908.github.io/
