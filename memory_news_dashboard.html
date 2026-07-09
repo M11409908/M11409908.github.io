@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>記憶體價格每日資訊看板</title>
+<style>
+  :root{
+    --bg:#f4f7fb;
+    --card:#ffffff;
+    --primary:#2563eb;
+    --primary-dark:#1d4ed8;
+    --accent1:#0ea5e9;
+    --accent2:#8b5cf6;
+    --accent3:#10b981;
+    --text:#1e293b;
+    --muted:#64748b;
+    --border:#e2e8f0;
+    --shadow: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+    --shadow-hover: 0 8px 24px rgba(15,23,42,0.08);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Segoe UI","PingFang TC","Microsoft JhengHei",Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,#eef3fb 0%, #f4f7fb 250px, #f4f7fb 100%);
+    color:var(--text);
+    padding:0 0 60px;
+  }
+  header{
+    background:linear-gradient(120deg,#1d4ed8 0%, #2563eb 45%, #0ea5e9 100%);
+    padding:40px 24px 56px;
+    color:#fff;
+    text-align:center;
+    position:relative;
+  }
+  header h1{
+    margin:0 0 10px;
+    font-size:32px;
+    font-weight:700;
+    letter-spacing:1px;
+  }
+  header p{
+    margin:0;
+    font-size:15px;
+    opacity:0.92;
+  }
+  header .badge{
+    display:inline-block;
+    margin-top:14px;
+    background:rgba(255,255,255,0.18);
+    border:1px solid rgba(255,255,255,0.35);
+    padding:6px 16px;
+    border-radius:999px;
+    font-size:13px;
+    backdrop-filter:blur(4px);
+  }
+  .container{
+    max-width:1180px;
+    margin:-32px auto 0;
+    padding:0 24px;
+  }
+  .sections{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(320px,1fr));
+    gap:24px;
+  }
+  .section{
+    background:var(--card);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .section-header{
+    padding:20px 22px 16px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    border-bottom:1px solid var(--border);
+  }
+  .section-header .dot{
+    width:10px;height:10px;border-radius:50%;
+    flex-shrink:0;
+  }
+  .section-header h2{
+    margin:0;
+    font-size:18px;
+    font-weight:700;
+  }
+  .section-header .count{
+    margin-left:auto;
+    font-size:12px;
+    color:var(--muted);
+    background:var(--bg);
+    padding:3px 10px;
+    border-radius:999px;
+    font-weight:600;
+  }
+  .sec-1 .dot{background:var(--primary);}
+  .sec-2 .dot{background:var(--accent2);}
+  .sec-3 .dot{background:var(--accent3);}
+
+  .card-list{
+    padding:14px 16px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    flex:1;
+  }
+  .news-card{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px 16px;
+    transition:box-shadow .15s ease, transform .15s ease, border-color .15s ease;
+    background:#fbfcfe;
+  }
+  .news-card:hover{
+    box-shadow:var(--shadow-hover);
+    transform:translateY(-2px);
+    border-color:#cbd5e1;
+  }
+  .news-title{
+    font-size:15px;
+    font-weight:700;
+    line-height:1.45;
+    margin:0 0 8px;
+    color:var(--text);
+  }
+  .news-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    margin-bottom:8px;
+  }
+  .tag{
+    font-size:11.5px;
+    padding:2px 9px;
+    border-radius:999px;
+    font-weight:600;
+  }
+  .tag.source{
+    background:#e0f2fe;
+    color:#0369a1;
+  }
+  .tag.date{
+    background:#eef2ff;
+    color:#4338ca;
+  }
+  .news-summary{
+    font-size:13.5px;
+    color:var(--muted);
+    line-height:1.55;
+    margin:0;
+  }
+  .news-link{
+    display:inline-block;
+    margin-top:8px;
+    font-size:12.5px;
+    color:var(--primary);
+    text-decoration:none;
+    font-weight:600;
+  }
+  .news-link:hover{text-decoration:underline;}
+  .empty-state{
+    text-align:center;
+    padding:40px 20px;
+    color:var(--muted);
+    font-size:14px;
+  }
+  .empty-state .icon{
+    font-size:32px;
+    display:block;
+    margin-bottom:8px;
+    opacity:0.5;
+  }
+  footer{
+    max-width:1180px;
+    margin:36px auto 0;
+    padding:0 24px;
+    color:var(--muted);
+    font-size:12.5px;
+    text-align:center;
+  }
+  .note-box{
+    max-width:1180px;
+    margin:24px auto 0;
+    padding:16px 22px;
+    background:#fffbeb;
+    border:1px solid #fde68a;
+    border-radius:12px;
+    font-size:12.5px;
+    color:#92400e;
+    line-height:1.6;
+  }
+  .note-box strong{color:#78350f;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>記憶體價格每日資訊看板</h1>
+  <p>Memory Market Daily Intelligence Dashboard</p>
+  <div class="badge">資料更新日期：2026-07-09　｜　資料範圍：2026-07-02 ～ 2026-07-09</div>
+</header>
+
+<div class="container">
+  <div class="sections">
+
+    <!-- Section 1: 技術更新 -->
+    <div class="section sec-1">
+      <div class="section-header">
+        <span class="dot"></span>
+        <h2>各家推出的技術更新</h2>
+        <span class="count">3 則</span>
+      </div>
+      <div class="card-list">
+        <div class="news-card">
+          <p class="news-title">博帝科技（Patriot Memory）推出 Viper Steel 5 Infinite DDR5，搭載專利「無限鏡」3D光學燈效</p>
+          <div class="news-meta">
+            <span class="tag source">PR Newswire</span>
+            <span class="tag date">2026-07-08</span>
+          </div>
+          <p class="news-summary">新一代電競 DDR5 記憶體導入專利申請中的立體導光 RGB 燈效，超頻可達 8000MT/s，提供 32GB～96GB 多種容量。</p>
+          <a class="news-link" href="https://www.prnewswire.com/apac/zh/news-releases/-viper-steel-5-infinite-ddr5----8000mts--302820437.html" target="_blank" rel="noopener">查看原文 →</a>
+        </div>
+        <div class="news-card">
+          <p class="news-title">群聯（Phison）E37T DRAM-less SSD 控制器實測：首款跑滿 PCIe Gen5 頻寬的無 DRAM 方案</p>
+          <div class="news-meta">
+            <span class="tag source">PC Perspective</span>
+            <span class="tag date">2026-07-03</span>
+          </div>
+          <p class="news-summary">6nm製程、4通道無DRAM快取控制器實測循序讀取達14.9GB/s、功耗僅3.385W，為目前最快消費級Gen5方案。</p>
+          <a class="news-link" href="https://pcper.com/2026/07/the-newest-dram-less-ssd-controller-phisons-e37t/" target="_blank" rel="noopener">查看原文 →</a>
+        </div>
+        <div class="news-card">
+          <p class="news-title">三星計畫 2026 年第三季將 DRAM 售價再調漲最高 20%</p>
+          <div class="news-meta">
+            <span class="tag source">Sammy Fans</span>
+            <span class="tag date">2026-07-03</span>
+          </div>
+          <p class="news-summary">三星正與客戶洽談Q3 DRAM均價調漲，延續今年AI伺服器與HBM需求排擠消費級供應所致的漲價趨勢。</p>
+          <a class="news-link" href="https://www.sammyfans.com/2026/07/03/samsung-wants-more-money-for-dram-in-q3-2026/" target="_blank" rel="noopener">查看原文 →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: 媒體試用心得 -->
+    <div class="section sec-2">
+      <div class="section-header">
+        <span class="dot"></span>
+        <h2>各媒體的試用心得</h2>
+        <span class="count">2 則</span>
+      </div>
+      <div class="card-list">
+        <div class="news-card">
+          <p class="news-title">【2026·7月電腦配置推薦】自費教你性價比裝機，2千~4萬預算21套配置（含記憶體選購建議）</p>
+          <div class="news-meta">
+            <span class="tag source">Bilibili｜超能搞機</span>
+            <span class="tag date">2026-07-07 附近</span>
+          </div>
+          <p class="news-summary">依不同預算提供整機配置建議，內含記憶體(RAM)容量與選購建議，適合新手入門參考。</p>
+          <a class="news-link" href="https://www.bilibili.com/video/BV1iHTe6rE7M/" target="_blank" rel="noopener">查看原文 →</a>
+        </div>
+        <div class="news-card">
+          <p class="news-title">雙面顆粒、大容量、高頻率、低CL值——Origin Code Vortex DDR5 96GB (48GBx2) 開箱評測</p>
+          <div class="news-meta">
+            <span class="tag source">XFastest</span>
+            <span class="tag date">2026-07-05</span>
+          </div>
+          <p class="news-summary">針對新款DDR5 96GB雙通道套裝進行開箱與規格解析，聚焦雙面顆粒設計的高頻率、低延遲表現。</p>
+          <a class="news-link" href="https://www.xfastest.com/" target="_blank" rel="noopener">查看原文 →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: 新產品的介紹 -->
+    <div class="section sec-3">
+      <div class="section-header">
+        <span class="dot"></span>
+        <h2>新產品的介紹</h2>
+        <span class="count">3 則</span>
+      </div>
+      <div class="card-list">
+        <div class="news-card">
+          <p class="news-title">三星 PM1763 PCIe 6.0 企業級 SSD 正式量產，讀取速度達 28.4GB/s</p>
+          <div class="news-meta">
+            <span class="tag source">XenoSpectrum</span>
+            <span class="tag date">2026-07-08</span>
+          </div>
+          <p class="news-summary">三星首款PCIe 6.0企業級SSD量產，主打AI伺服器應用，讀寫速度較前代提升逾一倍、能效提升1.8倍。</p>
+          <a class="news-link" href="https://xenospectrum.com/samsung-pm1763-pcie6-ssd-mass-production/" target="_blank" rel="noopener">查看原文 →</a>
+        </div>
+        <div class="news-card">
+          <p class="news-title">微星（MSI）BIOS更新解鎖CXMT記憶體，AM5主機板DDR5支援速度提升至8200MT/s（含設定技巧）</p>
+          <div class="news-meta">
+            <span class="tag source">XFastest News</span>
+            <span class="tag date">2026-07-08</span>
+          </div>
+          <p class="news-summary">新版BIOS讓中國長鑫（CXMT）製造的DDR5記憶體在AM5雙插槽下可穩定超頻至8200MT/s，屬實用韌體設定教學。</p>
+          <a class="news-link" href="https://www.xfastest.com/thread-311973-1-1.html" target="_blank" rel="noopener">查看原文 →</a>
+        </div>
+        <div class="news-card">
+          <p class="news-title">雷克沙（Lexar）推出採用CXMT顆粒的 THOR RGB 第二代 DDR5-7600 記憶體套裝</p>
+          <div class="news-meta">
+            <span class="tag source">Wccftech</span>
+            <span class="tag date">2026-07-08</span>
+          </div>
+          <p class="news-summary">新一代THOR RGB DDR5記憶體採用CXMT DRAM顆粒，時脈突破7600MT/s，提供32GB雙通道套裝，適用AMD平台。</p>
+          <a class="news-link" href="https://wccftech.com/lexar-breaks-the-6000-mt-s-barrier-and-launches-cxmt-based-ddr5-ram-kits-with-up-to-7600-mt-s-speed/" target="_blank" rel="noopener">查看原文 →</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="note-box">
+    <strong>備註：</strong>本期資訊由三個搜尋代理人分頭彙整，僅收錄能確認明確發布日期（2026-07-02～07-09）之內容；日期不明或落在範圍外的相關報導（如漲價財報分析、常態性教學頁面等）已排除，以確保時效性。
+  </div>
+</div>
+
+<footer>
+  記憶體價格每日資訊看板　｜　自動化排程任務產出　｜　下次更新：每日 12:30
+</footer>
+
+</body>
+</html>
