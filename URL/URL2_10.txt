@@ -1,2 +1,0 @@
-這是2_10的作業 html mediapipe做人體與手部偵測
-https://m11409908.github.io/
